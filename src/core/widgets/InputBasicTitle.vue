@@ -1,5 +1,5 @@
 <template>
-  <div class="MatcWidgetTypeInputBasicTitle"></div>
+  <div class="MatcWidgetTypeTextBox"></div>
 </template>
 <script>
 import DojoWidget from "dojo/DojoWidget";
@@ -12,27 +12,27 @@ import Logger from "common/Logger";
 import UIWidget from "core/widgets/UIWidget";
 
 export default {
-  name: "InputBasicTitle",
+  name: "TextBox",
   mixins: [UIWidget, DojoWidget],
-  data: function () {
+  data: function() {
     return {
       value: null,
       mode: "edit",
-      hasFocus: false,
+      hasFocus: false
     };
   },
   components: {},
   methods: {
-    postCreate() {
-      this.log = new Logger("InputBasicTitle");
+    postCreate () {
+      this.log = new Logger("TextBox");
       if (this.mode == "simulator") {
         this.input = document.createElement("input");
         this.input.type = "text";
       } else {
         this.input = document.createElement("div");
-        css.add(this.input, "MatcWidgetTypeInputBasicTitlePreview");
+        css.add(this.input, "MatcWidgetTypeTextBoxPreview");
       }
-      css.add(this.input, "MatcWidgetTypeInputBasicTitleInput");
+      css.add(this.input, "MatcWidgetTypeTextBoxInput");
       this.domNode.appendChild(this.input);
       this._borderNodes = [this.input];
       this._backgroundNodes = [this.input];
@@ -40,80 +40,56 @@ export default {
       this._shadowNodes = [this.input];
     },
 
-    getAnimationNode() {
+    getAnimationNode () {
       return this.domNode.parentNode;
     },
 
-    onSimulatorEvent(type, screenID, widgetID) {
-      this.log.log(
-        5,
-        "onSimulatorEvent",
-        this.model.id,
-        type,
-        "@",
-        screenID,
-        widgetID
-      );
-      if (
-        type != "ScreenScroll" &&
-        type != "Animation" &&
-        type != "ScreenGesture" &&
-        widgetID != this.model.id
-      ) {
+    onSimulatorEvent (type, screenID, widgetID) {
+      this.log.log(5, "onSimulatorEvent", this.model.id, type, "@" , screenID, widgetID)
+      if (type != "ScreenScroll" && type != "Animation" && type != "ScreenGesture" && widgetID != this.model.id) {
         if (this.hasFocus) {
           this.input.blur();
         }
       }
     },
 
-    wireEvents() {
+    wireEvents () {
       if (!this.wired) {
-        this.own(
-          this.addClickListener(this.domNode, lang.hitch(this, "onInputClick"))
-        );
+        this.own(this.addClickListener(this.domNode, lang.hitch(this, "onInputClick")));
         this.own(on(this.input, "focus", lang.hitch(this, "onFocus")));
         if (this.mode == "simulator") {
           this.own(on(this.input, "blur", lang.hitch(this, "onBlur")));
           this.own(on(this.input, "change", lang.hitch(this, "onChange")));
-          this.own(
-            topic.subscribe(
-              "MatcSimulatorEvent",
-              lang.hitch(this, "onSimulatorEvent")
-            )
-          );
+          this.own(topic.subscribe("MatcSimulatorEvent",lang.hitch(this, "onSimulatorEvent")));
         }
       }
       this.afterWiredEvents();
       this.wired = true;
       this.setAutoFocus(this.input);
-      this.wireHover();
+      this.wireHover()
     },
 
     /**
      * For child classes to hook in
      */
-    afterWiredEvents() {},
+    afterWiredEvents () {},
 
-    getLabelNode() {
+    getLabelNode () {
       return this.input;
     },
 
-    onInputClick(e) {
+    onInputClick (e) {
       this.log.log(0, "onInputClick", "enter");
       this.stopPropagation(e);
       this.emitClick(e);
     },
 
-    onFocus(e) {
+    onFocus (e) {
       this.log.log(0, "onFocus", "enter >" + this.lastValidation);
       this.stopPropagation(e);
 
-      this.keyUpListener = on(this.input, "keyup", lang.hitch(this, "onKeyUp"));
-      this.keyDownListener = on(
-        this.input,
-        "keydown",
-        lang.hitch(this, "onKeyDown")
-      );
+      this.keyUpListener = on(this.input,"keyup", lang.hitch(this, "onKeyUp"));
+      this.keyDownListener = on(this.input,"keydown", lang.hitch(this, "onKeyDown"));
       if (this.model.focus && this.lastValidation) {
         this.emitAnimation(this.model.id, 0, this.model.focus);
       }
@@ -122,11 +98,11 @@ export default {
       this.afterFocus();
     },
 
-    afterFocus() {
+    afterFocus () {
       this.initCompositeState(this._readValue());
     },
 
-    onKeyUp() {
+    onKeyUp () {
       this.log.log(3, "onKeyUp", "enter > ");
       this.addCompositeSubState(this._readValue());
       this.value = this._readValue();
@@ -141,25 +117,27 @@ export default {
       }
     },
 
-    onEnterPressed() {
+    onEnterPressed () {
       this.input.blur();
       var gesture = {
-        type: "KeyboardEnter",
+        type: "KeyboardEnter"
       };
       this.emit("gesture", gesture);
     },
 
-    onChange() {
+    onChange () {
       // force blur to flush out data binding before
       // any transitions are fired
-      this.onBlur();
+      this.onBlur()
       const gesture = {
-        type: "InputChange",
+        type: "InputChange"
       };
       this.emit("gesture", gesture);
-    },
+    }, 
 
-    onBlur(e) {
+   
+
+    onBlur (e) {
       this.log.log(1, "onBlur", "enter");
       this.stopPropagation(e);
 
@@ -180,28 +158,28 @@ export default {
       this.emit("blur", {});
     },
 
-    getStateOptions() {
+    getStateOptions () {
       return {
         valid: this.lastValidation,
-        focus: this.hasFocus,
+        focus: this.hasFocus
       };
     },
 
-    getState() {
+    getState () {
       return {
         type: "text",
         value: this._readValue(),
         options: {
           valid: this.lastValidation,
-          focus: this.hasFocus,
-        },
+          focus: this.hasFocus
+        }
       };
     },
 
     /**
      * Subclasses my overwrite this...
      */
-    _readValue() {
+    _readValue () {
       if (this.mode == "simulator") {
         return this.input.value;
       } else {
@@ -209,7 +187,7 @@ export default {
       }
     },
 
-    setState(state, t) {
+    setState (state, t) {
       if (state && state.type == "text") {
         /**
          * If we have children its an animation...
@@ -241,9 +219,9 @@ export default {
     /**
      * child classes can overwrite
      */
-    afterSetState() {},
+    afterSetState () {},
 
-    cleanUp() {
+    cleanUp () {
       if (this.keyUpListener) {
         this.keyUpListener.remove();
       }
@@ -254,7 +232,8 @@ export default {
       delete this.keyDownListener;
     },
 
-    render(model, style, scaleX, scaleY) {
+    render (model, style, scaleX, scaleY) {
+
       this.model = model;
       this.style = style;
       this._validStyle = lang.clone(style);
@@ -269,13 +248,10 @@ export default {
       }
 
       if (model.props.stringCase) {
-        css.add(
-          this.domNode,
-          "MatcWidgetTypeInputBasicTitle" + model.props.stringCase
-        );
+        css.add(this.domNode, "MatcWidgetTypeTextBox" + model.props.stringCase);
       } else {
-        css.remove(this.domNode, "MatcWidgetTypeInputBasicTitleUpperCase");
-        css.remove(this.domNode, "MatcWidgetTypeInputBasicTitleLowerCase");
+        css.remove(this.domNode, "MatcWidgetTypeTextBoxUpperCase");
+        css.remove(this.domNode, "MatcWidgetTypeTextBoxLowerCase");
       }
 
       if (model.props.label) {
@@ -323,16 +299,13 @@ export default {
         const selector = model.id + "" + new Date().getTime();
 
         const placeholderStyle = {
-          color: this.getPlaceHolderColor(style),
+          color: this.getPlaceHolderColor(style)
         };
 
         /**
          * FIXME: Add other browsers as well
          */
-        this.addCssClass(
-          selector + "::-webkit-input-placeholder",
-          placeholderStyle
-        );
+        this.addCssClass(selector + "::-webkit-input-placeholder", placeholderStyle);
 
         /**
          * Add the pseudo class
@@ -348,15 +321,15 @@ export default {
     /**
      * Child classes can do something in here
      */
-    beforeSetStyle() {},
+    beforeSetStyle () {},
 
-    getPlaceHolderColor(style) {
+    getPlaceHolderColor (style) {
       const c = new Color(style.color);
       c.a = 0.5;
       return c.toString();
     },
 
-    addCssClass(selector, styles) {
+    addCssClass (selector, styles) {
       if (!this._styleNode) {
         this._styleNode = [];
       }
@@ -367,34 +340,33 @@ export default {
       for (let key in styles) {
         s += key + " :" + styles[key] + ";";
       }
-      s += "@import url('./styles/antd.css')"
       s += "}";
       style.innerHTML = s;
       document.getElementsByTagName("head")[0].appendChild(style);
       this._styleNode.push(style);
     },
 
-    getValue() {
+    getValue () {
       return this.value;
     },
 
-    unsetPlaceHolder() {
-      css.remove(this.input, "MatcWidgetTypeInputBasicTitleInputPlaceholder");
+    unsetPlaceHolder () {
+      css.remove(this.input, "MatcWidgetTypeTextBoxInputPlaceholder");
       this.input.style.color = this.style.color;
     },
 
-    setPlaceholder(msg) {
+    setPlaceholder (msg) {
       if (this.mode == "simulator") {
         this.input.placeholder = msg;
       } else {
-        css.add(this.input, "MatcWidgetTypeInputBasicTitleInputPlaceholder");
+        css.add(this.input, "MatcWidgetTypeTextBoxInputPlaceholder");
         this.input.innerHTML = msg;
         this.input.style.color = this.getPlaceHolderColor(this.style);
       }
     },
 
-    setValue(value, ignoreValidation) {
-      this.unsetPlaceHolder();
+    setValue (value, ignoreValidation) {
+      this.unsetPlaceHolder()
       if (value != null && value != undefined && this.value != value) {
         this.value = value;
         if (this.mode == "simulator") {
@@ -416,7 +388,7 @@ export default {
       }
     },
 
-    _validateValue(value) {
+    _validateValue (value) {
       const validation = this.model.props.validation;
       if (validation) {
         let type = validation.type;
@@ -528,18 +500,20 @@ export default {
       return true;
     },
 
-    isValid: function (showError) {
+    isValid: function(showError) {
       return this.validate(this._readValue(), showError);
     },
 
-    _setDataBindingValue(v) {
+    _setDataBindingValue (v) {
       if (this.isQDate(v)) {
         v = this.convertQDateToString(v);
       }
       this.setValue(v);
     },
 
-    beforeDestroy() {
+  
+
+    beforeDestroy () {
       if (this._compositeState) {
         this.emitCompositeState("text", this.input.value);
       }
@@ -555,12 +529,12 @@ export default {
           delete this._styleNode;
         }
       } catch (e) {
-        console.warn("InputBasicTitle.destroy()", e);
+        console.warn("TextBox.destroy()", e);
       }
 
       this.cleanUp();
-    },
+    }
   },
-  mounted() {},
+  mounted() {}
 };
 </script>
