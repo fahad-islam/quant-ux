@@ -5,6 +5,7 @@ import ModelGeom from 'core/ModelGeom'
 import lang from 'dojo/_base/lang'
 import CoreUtil from 'core/CoreUtil'
 // import HelloWorld from 'examples/HelloWorld'
+import InputBasicTitle from "../../src/core/widgets/InputBasicTitle"
 
 /**
  * Add here imports
@@ -16,7 +17,7 @@ class SymbolService extends AbstractService{
         super()
         this.logger = new Logger('SymbolService')
         this.widgets = {
-          // 'HelloWorld': HelloWorld
+          'InputBasicTitle': InputBasicTitle
         }
 
     }
@@ -95,6 +96,7 @@ class SymbolService extends AbstractService{
             import(/* webpackChunkName: "themes" */ 'themes/wireframe/tab.json'),
             import(/* webpackChunkName: "themes" */ 'themes/wireframe/table.json'),
             import(/* webpackChunkName: "themes" */ 'themes/wireframe/textbox.json'),
+            import(/* webpackChunkName: "themes" */ 'themes/wireframe/inputBasicTitle.json'),
             import(/* webpackChunkName: "themes" */ 'themes/wireframe/timespinner.json'),
             import(/* webpackChunkName: "themes" */ 'themes/wireframe/typeahead.json'),
             import(/* webpackChunkName: "themes" */ 'themes/wireframe/volume.json'),
