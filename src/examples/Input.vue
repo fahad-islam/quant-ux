@@ -1,78 +1,30 @@
 <template>
-  <div class="">
-    <div style="position: relative">
-      <input
-        class="ant-input"
-        style="color: #a0aec0"
-        placeholder="Basic usage"
-        allow-clear
-      />
-      <div
-        ref="lblNode"
-        style="
-          position: absolute;
-          top: -2px;
-          left: 10px;
-          font-size: 12px;
-          background: white;
-          padding: 0px 2px;
-          height: 3px;
-          display: flex;
-          align-items: center;
-          color: #a0aec0;
-        "
-      >
-        {{ inputLabel }}
-      </div>
-    </div>
-  </div>
+  <div class="MatcWidgetTypeTextBox"></div>
 </template>
-<style>
-.HelloWorldWidget {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  text-align: left;
-}
-</style>
-
 <script>
 import DojoWidget from "dojo/DojoWidget";
+import css from "dojo/css";
 import lang from "dojo/_base/lang";
 import on from "dojo/on";
-import touch from "dojo/touch";
-import UIWidget from "core/widgets/UIWidget";
-import TextBox from "core/widgets/TextBox";
+import topic from "dojo/topic";
 import Color from "dojo/_base/Color";
-import css from "dojo/css";
+import Logger from "common/Logger";
+import UIWidget from "core/widgets/UIWidget";
 
 export default {
-  name: "InputBasicTitle",
-  mixins: [UIWidget, DojoWidget, TextBox],
-  data: function () {
+  name: "InputX",
+  mixins: [UIWidget, DojoWidget],
+  data: function() {
     return {
-      inputLabel: "",
       value: null,
       mode: "edit",
-      hasFocus: false,
-      style: {},
-      model: {},
+      hasFocus: false
     };
   },
   components: {},
-  computed: {
-    options() {
-      return this.style.options;
-    },
-  },
   methods: {
-    getName() {
-      return "Hello World";
-    },
-
-    postCreate() {
-
+    postCreate () {
+      this.log = new Logger("TextBox");
       if (this.mode == "simulator") {
         this.input = document.createElement("input");
         this.input.type = "text";
@@ -80,264 +32,64 @@ export default {
         this.input = document.createElement("div");
         css.add(this.input, "MatcWidgetTypeTextBoxPreview");
       }
-      
       css.add(this.input, "MatcWidgetTypeTextBoxInput");
       this.domNode.appendChild(this.input);
       this._borderNodes = [this.input];
       this._backgroundNodes = [this.input];
       this._paddingNodes = [this.input];
       this._shadowNodes = [this.input];
-      this._labelNodes = [this.domNode];
     },
 
-    getCreateTemplates() {
-      return [
-        {
-          id: "AntInput",
-          type: "ExampleInputBasicTitle", // must be the same as tghe name used in the SymbolService
-          _type: "Widget",
-          category: "CIPS",
-          subcategory: "AAAAAA",
-          name: "InputBasicTitle",
-          x: 0,
-          y: 0,
-          w: 100,
-          h: 30,
-          z: 0,
-          props: {
-            label: "Label",
-            placeholderText: "Enter a value",
-            placeholder: true,
-          },
-          has: {
-            backgroundColor: true,
-            data: true,
-            border: true,
-            label: true,
-            padding: true,
-            advancedText: true,
-          },
-          style: {
-            fontSize: 20,
-            fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif",
-            textAlign: "left",
-            letterSpacing: 0,
-            lineHeight: 1,
-            color: "#333333",
-            borderTopRightRadius: 0,
-            borderTopLeftRadius: 0,
-            borderBottomRightRadius: 0,
-            borderBottomLeftRadius: 0,
-            borderTopWidth: 0,
-            borderBottomWidth: 0,
-            borderRightWidth: 0,
-            borderLeftWidth: 0,
-            borderTopStyle: "solid",
-            borderBottomStyle: "solid",
-            borderRightStyle: "solid",
-            borderLeftStyle: "solid",
-            borderTopColor: "#333333",
-            borderBottomColor: "#333333",
-            borderRightColor: "#333333",
-            borderLeftColor: "#333333",
-            background: null,
-          },
-          error: {
-            borderTopColor: "#cc0000",
-            borderBottomColor: "#cc0000",
-            borderRightColor: "#cc0000",
-            borderLeftColor: "#cc0000",
-            background: "#ffcaca",
-          },
-          focus: {
-            background: "#f2f2f2",
-          },
-        },
-        {
-          id: "TextBox",
-          type: "TextBox",
-          _type: "Widget",
-          category: "CIPS",
-          subcategory: "AFormInput",
-          name: "Text Box",
-          x: 0,
-          y: 0,
-          w: 200,
-          h: 40,
-          z: 0,
-          props: {
-            label: "Enter a value",
-            placeholder: true,
-          },
-          has: {
-            label: true,
-            backgroundColor: true,
-            border: true,
-            editable: true,
-            onclick: true,
-            padding: true,
-          },
-          style: {
-            color: "#333333",
-            fontFamily: "Helvetica Neue,Helvetica,Arial,sans-serif",
-            borderTopRightRadius: 3,
-            borderTopLeftRadius: 3,
-            borderBottomRightRadius: 3,
-            borderBottomLeftRadius: 3,
-            borderTopWidth: 1,
-            borderBottomWidth: 1,
-            borderRightWidth: 1,
-            borderLeftWidth: 1,
-            fontSize: 18,
-            borderTopColor: "#333333",
-            borderBottomColor: "#333333",
-            borderRightColor: "#333333",
-            borderLeftColor: "#333333",
-            background: "#ffffff",
-            paddingTop: 5,
-            paddingBottom: 5,
-            paddingLeft: 5,
-            paddingRight: 5,
-            textAlign: "left",
-          },
-          error: {
-            borderTopColor: "#cc0000",
-            borderBottomColor: "#cc0000",
-            borderRightColor: "#cc0000",
-            borderLeftColor: "#cc0000",
-            background: "#ffcaca",
-          },
-          focus: {
-            background: "#f2f2f2",
-          },
-        },
-      ];
+    getAnimationNode () {
+      return this.domNode.parentNode;
     },
 
-    getDataProperties() {
-      return [
-        {
-          label: "Text is a Placeholder",
-          type: "text",
-          
-        },
-        {
-          label: "Space",
-          type: "Number",
-          key: "space",
-          isProp: false,
-        },
-        {
-          label: "Another Number",
-          type: "Number",
-          options: [10, 20, 30],
-          key: "foo",
-          isProp: false,
-        },
-        {
-          label: "Checkbox",
-          type: "Boolean",
-          key: "bool",
-          isProp: false,
-        },
-        {
-          label: " Color",
-          type: "Color",
-          icon: "mdi-table-large",
-          key: "anotherColor",
-          isProp: false,
-        },
-        {
-          label: "Options",
-          type: "Options",
-          options: [
-            { label: "A", inputLabel: "A" },
-            { label: "B", inputLabel: "B" },
-          ],
-          key: "options",
-          isProp: false,
-        },
-      ];
-    },
-
-    wireEvents() {
-      this.own(
-        this.addClickListener(this.domNode, lang.hitch(this, "onClick"))
-      );
-      this.own(
-        on(this.domNode, touch.over, lang.hitch(this, "onDomMouseOver"))
-      );
-      this.own(on(this.domNode, touch.out, lang.hitch(this, "onDomMouseOut")));
-    },
-
-    getLabelNode() {
-      return this.$refs.lblNode;
-    },
-
-    getInputLabel() {
-      return this.inputLabel;
-    },
-
-    setInputLabel(inputLabel) {
-      this.inputLabel = inputLabel;
-    },
-
-    getInputLabelState() {
-      return [
-        {
-          type: "inputLabel",
-          inputLabel: this.inputLabel,
-        },
-        {
-          type: "text",
-          value: this._readValue(),
-          options: {
-            valid: this.lastValidation,
-            focus: this.hasFocus,
-          },
-        },
-      ];
-    },
-
-    setInputLabelState(state) {
-      /**
-       * Hack for the time when we use the getValueLabel() mechnism!
-       */
-      if (this.hackValueLabel) {
-        return;
-      }
-      if (state && state.type == "inputLabel") {
-        this.setInputLabel(state.inputLabel);
+    onSimulatorEvent (type, screenID, widgetID) {
+      this.log.log(5, "onSimulatorEvent", this.model.id, type, "@" , screenID, widgetID)
+      if (type != "ScreenScroll" && type != "Animation" && type != "ScreenGesture" && widgetID != this.model.id) {
+        if (this.hasFocus) {
+          this.input.blur();
+        }
       }
     },
 
-    resize() {},
-
-    onClick: function (e) {
-      this.stopEvent(e);
-      this.emitClick(e);
+    wireEvents () {
+      if (!this.wired) {
+        this.own(this.addClickListener(this.domNode, lang.hitch(this, "onInputClick")));
+        this.own(on(this.input, "focus", lang.hitch(this, "onFocus")));
+        if (this.mode == "simulator") {
+          this.own(on(this.input, "blur", lang.hitch(this, "onBlur")));
+          this.own(on(this.input, "change", lang.hitch(this, "onChange")));
+          this.own(topic.subscribe("MatcSimulatorEvent",lang.hitch(this, "onSimulatorEvent")));
+        }
+      }
+      this.afterWiredEvents();
+      this.wired = true;
+      this.setAutoFocus(this.input);
+      this.wireHover()
     },
 
-    //==========================================================================
-    // - Input Stuff -
-    //==========================================================================
+    /**
+     * For child classes to hook in
+     */
+    afterWiredEvents () {},
 
-    onInputClick(e) {
+    getLabelNode () {
+      return this.input;
+    },
+
+    onInputClick (e) {
       this.log.log(0, "onInputClick", "enter");
       this.stopPropagation(e);
       this.emitClick(e);
     },
 
-    onFocus(e) {
+    onFocus (e) {
       this.log.log(0, "onFocus", "enter >" + this.lastValidation);
       this.stopPropagation(e);
 
-      this.keyUpListener = on(this.input, "keyup", lang.hitch(this, "onKeyUp"));
-      this.keyDownListener = on(
-        this.input,
-        "keydown",
-        lang.hitch(this, "onKeyDown")
-      );
+      this.keyUpListener = on(this.input,"keyup", lang.hitch(this, "onKeyUp"));
+      this.keyDownListener = on(this.input,"keydown", lang.hitch(this, "onKeyDown"));
       if (this.model.focus && this.lastValidation) {
         this.emitAnimation(this.model.id, 0, this.model.focus);
       }
@@ -346,11 +98,11 @@ export default {
       this.afterFocus();
     },
 
-    afterFocus() {
+    afterFocus () {
       this.initCompositeState(this._readValue());
     },
 
-    onKeyUp() {
+    onKeyUp () {
       this.log.log(3, "onKeyUp", "enter > ");
       this.addCompositeSubState(this._readValue());
       this.value = this._readValue();
@@ -365,25 +117,27 @@ export default {
       }
     },
 
-    onEnterPressed() {
+    onEnterPressed () {
       this.input.blur();
       var gesture = {
-        type: "KeyboardEnter",
+        type: "KeyboardEnter"
       };
       this.emit("gesture", gesture);
     },
 
-    onChange() {
+    onChange () {
       // force blur to flush out data binding before
       // any transitions are fired
-      this.onBlur();
+      this.onBlur()
       const gesture = {
-        type: "InputChange",
+        type: "InputChange"
       };
       this.emit("gesture", gesture);
-    },
+    }, 
 
-    onBlur(e) {
+   
+
+    onBlur (e) {
       this.log.log(1, "onBlur", "enter");
       this.stopPropagation(e);
 
@@ -404,28 +158,28 @@ export default {
       this.emit("blur", {});
     },
 
-    getStateOptions() {
+    getStateOptions () {
       return {
         valid: this.lastValidation,
-        focus: this.hasFocus,
+        focus: this.hasFocus
       };
     },
 
-    getState() {
+    getState () {
       return {
         type: "text",
         value: this._readValue(),
         options: {
           valid: this.lastValidation,
-          focus: this.hasFocus,
-        },
+          focus: this.hasFocus
+        }
       };
     },
 
     /**
      * Subclasses my overwrite this...
      */
-    _readValue() {
+    _readValue () {
       if (this.mode == "simulator") {
         return this.input.value;
       } else {
@@ -433,7 +187,7 @@ export default {
       }
     },
 
-    setState(state, t) {
+    setState (state, t) {
       if (state && state.type == "text") {
         /**
          * If we have children its an animation...
@@ -465,9 +219,9 @@ export default {
     /**
      * child classes can overwrite
      */
-    afterSetState() {},
+    afterSetState () {},
 
-    cleanUp() {
+    cleanUp () {
       if (this.keyUpListener) {
         this.keyUpListener.remove();
       }
@@ -478,16 +232,13 @@ export default {
       delete this.keyDownListener;
     },
 
-    render(model, style, scaleX, scaleY) {
+    render (model, style, scaleX, scaleY) {
+
       this.model = model;
       this.style = style;
       this._validStyle = lang.clone(style);
       this._scaleX = scaleX;
       this._scaleY = scaleY;
-
-      if (model.props && model.props.label) {
-        this.setInputLabel(model.props.label);
-      }
 
       if (model.props.options) {
         this.hasTypeahead = true;
@@ -503,11 +254,11 @@ export default {
         css.remove(this.domNode, "MatcWidgetTypeTextBoxLowerCase");
       }
 
-      if (model.props.placeholderText) {
+      if (model.props.label) {
         if (model.props.placeholder) {
-          this.setPlaceholder(model.props.placeholderText);
+          this.setPlaceholder(model.props.label);
         } else {
-          this.setValue(model.props.placeholderText, true);
+          this.setValue(model.props.label, true);
         }
       }
 
@@ -534,6 +285,7 @@ export default {
             break;
         }
       }
+
       /**
        * WbeKit cannot show the placeholder in the right color.. fucker. So
        * we have to set a pseudo class...
@@ -547,16 +299,13 @@ export default {
         const selector = model.id + "" + new Date().getTime();
 
         const placeholderStyle = {
-          color: this.getPlaceHolderColor(style),
+          color: this.getPlaceHolderColor(style)
         };
 
         /**
          * FIXME: Add other browsers as well
          */
-        this.addCssClass(
-          selector + "::-webkit-input-placeholder",
-          placeholderStyle
-        );
+        this.addCssClass(selector + "::-webkit-input-placeholder", placeholderStyle);
 
         /**
          * Add the pseudo class
@@ -572,15 +321,15 @@ export default {
     /**
      * Child classes can do something in here
      */
-    beforeSetStyle() {},
+    beforeSetStyle () {},
 
-    getPlaceHolderColor(style) {
+    getPlaceHolderColor (style) {
       const c = new Color(style.color);
       c.a = 0.5;
       return c.toString();
     },
 
-    addCssClass(selector, styles) {
+    addCssClass (selector, styles) {
       if (!this._styleNode) {
         this._styleNode = [];
       }
@@ -597,16 +346,16 @@ export default {
       this._styleNode.push(style);
     },
 
-    getValue() {
+    getValue () {
       return this.value;
     },
 
-    unsetPlaceHolder() {
+    unsetPlaceHolder () {
       css.remove(this.input, "MatcWidgetTypeTextBoxInputPlaceholder");
       this.input.style.color = this.style.color;
     },
 
-    setPlaceholder(msg) {
+    setPlaceholder (msg) {
       if (this.mode == "simulator") {
         this.input.placeholder = msg;
       } else {
@@ -616,8 +365,8 @@ export default {
       }
     },
 
-    setValue(value, ignoreValidation) {
-      this.unsetPlaceHolder();
+    setValue (value, ignoreValidation) {
+      this.unsetPlaceHolder()
       if (value != null && value != undefined && this.value != value) {
         this.value = value;
         if (this.mode == "simulator") {
@@ -639,7 +388,7 @@ export default {
       }
     },
 
-    _validateValue(value) {
+    _validateValue (value) {
       const validation = this.model.props.validation;
       if (validation) {
         let type = validation.type;
@@ -751,18 +500,20 @@ export default {
       return true;
     },
 
-    isValid: function (showError) {
+    isValid: function(showError) {
       return this.validate(this._readValue(), showError);
     },
 
-    _setDataBindingValue(v) {
+    _setDataBindingValue (v) {
       if (this.isQDate(v)) {
         v = this.convertQDateToString(v);
       }
       this.setValue(v);
     },
 
-    beforeDestroy() {
+  
+
+    beforeDestroy () {
       if (this._compositeState) {
         this.emitCompositeState("text", this.input.value);
       }
@@ -782,7 +533,8 @@ export default {
       }
 
       this.cleanUp();
-    },
+    }
   },
+  mounted() {}
 };
 </script>

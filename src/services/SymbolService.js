@@ -4,8 +4,8 @@ import Vue from "vue"
 import ModelGeom from 'core/ModelGeom'
 import lang from 'dojo/_base/lang'
 import CoreUtil from 'core/CoreUtil'
-// import HelloWorld from 'examples/HelloWorld'
-import InputBasicTitle from "../../src/core/widgets/InputBasicTitle"
+import HelloWorld from 'examples/HelloWorld'
+import InputBasicTitle from 'examples/InputBasicTitle'
 
 /**
  * Add here imports
@@ -17,7 +17,8 @@ class SymbolService extends AbstractService{
         super()
         this.logger = new Logger('SymbolService')
         this.widgets = {
-          'InputBasicTitle': InputBasicTitle
+          'ExampleInputBasicTitle': InputBasicTitle,
+          'HelloWorld': HelloWorld,
         }
 
     }

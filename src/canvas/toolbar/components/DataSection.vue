@@ -540,6 +540,18 @@ export default {
 			]);
 		},
 
+
+		_showAntInput (model){
+			this._setSectionLabel("TextBox");
+			this._renderCheck("Text is placeholder",model.props.placeholder, "placeholder" );
+			this._renderCheck("Focus on load",model.props.focus, "focus" );
+			this._renderLabelDropDown("Normal", model,"stringCase",[
+				{ value: null, icon:"mdi mdi-briefcase-check", label : "Normal"},
+				{ value:"UpperCase", icon:"mdi mdi-briefcase-upload", label : "Upper Case"},
+				{ value: "LowerCase", icon:"mdi mdi-briefcase-download", label : "Lower Case"}
+			]);
+		},
+
 		_showTypeAheadTextBox (model){
 			this._setSectionLabel("ComboBox");
 			this._renderCheck("Text is placeholder",model.props.placeholder, "placeholder" );
