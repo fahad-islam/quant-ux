@@ -1,6 +1,16 @@
 <template>
   <div class="MatcWidgetTypeTextBox">
-    <div class="lblnode" ref="lblNode">{{ value }}</div>
+    <div class="lblnode" style="  position: absolute;
+  top: -2px;
+  left: 10px;
+  font-size: 12px;
+  background: white;
+  padding: 0px 2px;
+  height: 3px;
+  display: flex;
+  align-items: center;
+  color: #a0aec0;
+" ref="lblNode">{{ value }}</div>
   </div>
 </template>
 <style>

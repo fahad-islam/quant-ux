@@ -1,11 +1,11 @@
 [
 	{
 		 "id" : "InputBasicTitle",
-		 "type" : "TextBox",
+		 "type" : "InputBasicTitle",
 		 "_type" : "Widget",
 		 "category" : "CIPS",
 		 "subcategory" : "AFormInput",
-		 "name" : "InputBasicTitle (TextBox)",
+		 "name" : "InputBasicTitle11 (TextBox)",
 		 "x" : 0,
 	     "y" : 0,
 	     "w" : 200,
