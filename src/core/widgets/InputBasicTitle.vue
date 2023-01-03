@@ -1,6 +1,22 @@
 <template>
-  <div class="MatcWidgetTypeTextBox"></div>
+  <div class="MatcWidgetTypeTextBox">
+    <div class="lblnode" ref="lblNode">{{ value }}</div>
+  </div>
 </template>
+<style>
+.lblnode {
+  position: absolute;
+  top: -2px;
+  left: 10px;
+  font-size: 12px;
+  background: white;
+  padding: 0px 2px;
+  height: 3px;
+  display: flex;
+  align-items: center;
+  color: #a0aec0;
+}
+</style>
 <script>
 import DojoWidget from "dojo/DojoWidget";
 import css from "dojo/css";
@@ -12,9 +28,9 @@ import Logger from "common/Logger";
 import UIWidget from "core/widgets/UIWidget";
 
 export default {
-  name: "TextBox",
+  name: "InputBasicTitle",
   mixins: [UIWidget, DojoWidget],
-  data: function() {
+  data: function () {
     return {
       value: null,
       mode: "edit",
@@ -23,7 +39,7 @@ export default {
   },
   components: {},
   methods: {
-    postCreate () {
+    postCreate() {
       this.log = new Logger("TextBox");
       if (this.mode == "simulator") {
         this.input = document.createElement("input");
@@ -38,14 +54,15 @@ export default {
       this._backgroundNodes = [this.input];
       this._paddingNodes = [this.input];
       this._shadowNodes = [this.input];
+      this._labelNodes = [this.domNode];
     },
 
-    getAnimationNode () {
+    getAnimationNode() {
       return this.domNode.parentNode;
     },
 
-    onSimulatorEvent (type, screenID, widgetID) {
-      this.log.log(5, "onSimulatorEvent", this.model.id, type, "@" , screenID, widgetID)
+    onSimulatorEvent(type, screenID, widgetID) {
+      this.log.log(5, "onSimulatorEvent", this.model.id, type, "@", screenID, widgetID)
       if (type != "ScreenScroll" && type != "Animation" && type != "ScreenGesture" && widgetID != this.model.id) {
         if (this.hasFocus) {
           this.input.blur();
@@ -53,14 +70,14 @@ export default {
       }
     },
 
-    wireEvents () {
+    wireEvents() {
       if (!this.wired) {
         this.own(this.addClickListener(this.domNode, lang.hitch(this, "onInputClick")));
         this.own(on(this.input, "focus", lang.hitch(this, "onFocus")));
         if (this.mode == "simulator") {
           this.own(on(this.input, "blur", lang.hitch(this, "onBlur")));
           this.own(on(this.input, "change", lang.hitch(this, "onChange")));
-          this.own(topic.subscribe("MatcSimulatorEvent",lang.hitch(this, "onSimulatorEvent")));
+          this.own(topic.subscribe("MatcSimulatorEvent", lang.hitch(this, "onSimulatorEvent")));
         }
       }
       this.afterWiredEvents();
@@ -72,24 +89,72 @@ export default {
     /**
      * For child classes to hook in
      */
-    afterWiredEvents () {},
+    afterWiredEvents() { },
 
-    getLabelNode () {
+
+
+    getLabelNode() {
+      return this.$refs.lblNode;
       return this.input;
     },
 
-    onInputClick (e) {
+    setPasswordHiddenLabel: function() {
+      if (this.hideLabel) {
+        if (this.passwordHidden) {
+          this.hideLabel.innerHTML = this.model.props.cleartextShowLabel;
+        } else {
+          this.hideLabel.innerHTML = this.model.props.cleartextHideLabel;
+        }
+      }
+      if (this.passwordHidden) {
+        this.input.type = "password";
+      } else {
+        this.input.type = "text";
+      }
+    },
+
+
+    /**
+     * 
+    
+     setPasswordHiddenLabel: function() {
+      if (this.hideLabel) {
+        if (this.passwordHidden) {
+          this.hideLabel.innerHTML = this.model.props.cleartextShowLabel;
+        } else {
+          this.hideLabel.innerHTML = this.model.props.cleartextHideLabel;
+        }
+      }
+      if (this.passwordHidden) {
+        this.input.type = "password";
+      } else {
+        this.input.type = "text";
+      }
+    },
+
+
+    // JSON
+    "props" : {
+		     "label" : "",
+		     "cleartextHideLabel" : "Hide",
+		     "cleartextShowLabel" : "Show"
+	     },
+
+     */
+
+
+    onInputClick(e) {
       this.log.log(0, "onInputClick", "enter");
       this.stopPropagation(e);
       this.emitClick(e);
     },
 
-    onFocus (e) {
+    onFocus(e) {
       this.log.log(0, "onFocus", "enter >" + this.lastValidation);
       this.stopPropagation(e);
 
-      this.keyUpListener = on(this.input,"keyup", lang.hitch(this, "onKeyUp"));
-      this.keyDownListener = on(this.input,"keydown", lang.hitch(this, "onKeyDown"));
+      this.keyUpListener = on(this.input, "keyup", lang.hitch(this, "onKeyUp"));
+      this.keyDownListener = on(this.input, "keydown", lang.hitch(this, "onKeyDown"));
       if (this.model.focus && this.lastValidation) {
         this.emitAnimation(this.model.id, 0, this.model.focus);
       }
@@ -98,11 +163,11 @@ export default {
       this.afterFocus();
     },
 
-    afterFocus () {
+    afterFocus() {
       this.initCompositeState(this._readValue());
     },
 
-    onKeyUp () {
+    onKeyUp() {
       this.log.log(3, "onKeyUp", "enter > ");
       this.addCompositeSubState(this._readValue());
       this.value = this._readValue();
@@ -117,7 +182,7 @@ export default {
       }
     },
 
-    onEnterPressed () {
+    onEnterPressed() {
       this.input.blur();
       var gesture = {
         type: "KeyboardEnter"
@@ -125,7 +190,7 @@ export default {
       this.emit("gesture", gesture);
     },
 
-    onChange () {
+    onChange() {
       // force blur to flush out data binding before
       // any transitions are fired
       this.onBlur()
@@ -133,11 +198,11 @@ export default {
         type: "InputChange"
       };
       this.emit("gesture", gesture);
-    }, 
+    },
 
-   
 
-    onBlur (e) {
+
+    onBlur(e) {
       this.log.log(1, "onBlur", "enter");
       this.stopPropagation(e);
 
@@ -158,14 +223,14 @@ export default {
       this.emit("blur", {});
     },
 
-    getStateOptions () {
+    getStateOptions() {
       return {
         valid: this.lastValidation,
         focus: this.hasFocus
       };
     },
 
-    getState () {
+    getState() {
       return {
         type: "text",
         value: this._readValue(),
@@ -179,7 +244,7 @@ export default {
     /**
      * Subclasses my overwrite this...
      */
-    _readValue () {
+    _readValue() {
       if (this.mode == "simulator") {
         return this.input.value;
       } else {
@@ -187,7 +252,7 @@ export default {
       }
     },
 
-    setState (state, t) {
+    setState(state, t) {
       if (state && state.type == "text") {
         /**
          * If we have children its an animation...
@@ -219,9 +284,9 @@ export default {
     /**
      * child classes can overwrite
      */
-    afterSetState () {},
+    afterSetState() { },
 
-    cleanUp () {
+    cleanUp() {
       if (this.keyUpListener) {
         this.keyUpListener.remove();
       }
@@ -232,7 +297,7 @@ export default {
       delete this.keyDownListener;
     },
 
-    render (model, style, scaleX, scaleY) {
+    render(model, style, scaleX, scaleY) {
 
       this.model = model;
       this.style = style;
@@ -240,12 +305,6 @@ export default {
       this._scaleX = scaleX;
       this._scaleY = scaleY;
 
-      if (model.props.options) {
-        this.hasTypeahead = true;
-        this.hints = model.props.options;
-      } else {
-        this.hints = [];
-      }
 
       if (model.props.stringCase) {
         css.add(this.domNode, "MatcWidgetTypeTextBox" + model.props.stringCase);
@@ -321,15 +380,19 @@ export default {
     /**
      * Child classes can do something in here
      */
-    beforeSetStyle () {},
+    beforeSetStyle() { 
+      if (model.props.passLabel) {
+        this.setPasswordHiddenLabel();
+      } 
+    },
 
-    getPlaceHolderColor (style) {
+    getPlaceHolderColor(style) {
       const c = new Color(style.color);
       c.a = 0.5;
       return c.toString();
     },
 
-    addCssClass (selector, styles) {
+    addCssClass(selector, styles) {
       if (!this._styleNode) {
         this._styleNode = [];
       }
@@ -346,16 +409,16 @@ export default {
       this._styleNode.push(style);
     },
 
-    getValue () {
+    getValue() {
       return this.value;
     },
 
-    unsetPlaceHolder () {
+    unsetPlaceHolder() {
       css.remove(this.input, "MatcWidgetTypeTextBoxInputPlaceholder");
       this.input.style.color = this.style.color;
     },
 
-    setPlaceholder (msg) {
+    setPlaceholder(msg) {
       if (this.mode == "simulator") {
         this.input.placeholder = msg;
       } else {
@@ -365,7 +428,7 @@ export default {
       }
     },
 
-    setValue (value, ignoreValidation) {
+    setValue(value, ignoreValidation) {
       this.unsetPlaceHolder()
       if (value != null && value != undefined && this.value != value) {
         this.value = value;
@@ -388,7 +451,7 @@ export default {
       }
     },
 
-    _validateValue (value) {
+    _validateValue(value) {
       const validation = this.model.props.validation;
       if (validation) {
         let type = validation.type;
@@ -500,20 +563,20 @@ export default {
       return true;
     },
 
-    isValid: function(showError) {
+    isValid: function (showError) {
       return this.validate(this._readValue(), showError);
     },
 
-    _setDataBindingValue (v) {
+    _setDataBindingValue(v) {
       if (this.isQDate(v)) {
         v = this.convertQDateToString(v);
       }
       this.setValue(v);
     },
 
-  
 
-    beforeDestroy () {
+
+    beforeDestroy() {
       if (this._compositeState) {
         this.emitCompositeState("text", this.input.value);
       }
@@ -535,6 +598,6 @@ export default {
       this.cleanUp();
     }
   },
-  mounted() {}
+  mounted() { }
 };
 </script>

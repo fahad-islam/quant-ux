@@ -194,6 +194,47 @@ export default {
       if (model.props && model.props.label) {
         this.setValue(model.props.label);
       }
+
+
+      if (model.props.stringCase) {
+        css.add(this.domNode, "MatcWidgetTypeTextBox" + model.props.stringCase);
+      } else {
+        css.remove(this.domNode, "MatcWidgetTypeTextBoxUpperCase");
+        css.remove(this.domNode, "MatcWidgetTypeTextBoxLowerCase");
+      }
+
+      if (model.props.label) {
+        if (model.props.placeholder) {
+          this.setPlaceholder(model.props.label);
+        } else {
+          this.setValue(model.props.label, true);
+        }
+      }
+
+      if (model.props.validation && this.mode == "simulator") {
+        const validation = model.props.validation;
+        let type = validation.type;
+        if (type == "custom") {
+          type = validation.subtype;
+        }
+        switch (type) {
+          case "int":
+            this.input.type = "number";
+            break;
+          case "double":
+            this.input.type = "number";
+            break;
+          case "email":
+            this.input.type = "email";
+            break;
+          case "phone":
+            this.input.type = "tel";
+            break;
+          default:
+            break;
+        }
+      }
+
     },
 
     getValue() {
